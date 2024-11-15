@@ -1,0 +1,59 @@
+#
+# Docker-compose setup for running tellicast in a container
+# Maintainer: Daniel R. Hurtmans
+#
+name: tellicast
+
+services:
+  tellicast:
+    build:
+      context: .
+      args:
+        # Building arguments from .env file
+        - ARG USER_ID=${USER_ID}
+        - ARG GROUP_ID=${GROUP_ID}
+        - ARG USER_NAME=${USER_NAME}
+        - ARG GROUP_NAME=${GROUP_NAME}
+    container_name: tellicast
+    restart: unless-stopped
+    networks: 
+      - tellicast
+      - other
+    entrypoint: /docker-entrypoint.sh
+    ports:
+      # Exposed ports (bas, hvs-1 and -2 so far)
+      - "8100:8100"
+      - "8200:8200"
+      - "8201:8201"
+    volumes:
+      # Configurations for tellicast services
+      - ./etc/cast-client_bas.ini:/etc/cast-client_bas.ini:ro
+      - ./etc/cast-client_hvs-1.ini:/etc/cast-client_hvs-1.ini:ro
+      - ./etc/cast-client-channels_bas.ini:/etc/cast-client-channels_bas.ini:ro
+      - ./etc/cast-client-channels_hvs-1.ini:/etc/cast-client-channels_hvs-1.ini:ro
+      - ./etc/tellicast-client.cfg:/etc/tellicast-client.cfg:ro
+      # Where data will be stored
+      - ${DATA_DIR}:/home/${USER_NAME}
+      # Log here
+      - ${LOG_DIR}:/var/log/tellicast-client/
+    devices:
+      # Share usb for e-Token
+      - /dev/bus:/dev/bus
+    cap_add:
+      -  SYS_PTRACE
+      
+    # We wil not run a root :-)
+    user: "${USER_NAME}:${GROUP_NAME}"
+
+networks:
+  other:
+    driver: bridge
+
+  # Explicitly force usage of one interface for multi-casting
+  tellicast:
+    driver: macvlan
+    driver_opts:
+      parent: ${NET_IF}
+    ipam:
+      driver: default
+
