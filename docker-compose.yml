@@ -21,16 +21,22 @@ services:
       - other
     entrypoint: /docker-entrypoint.sh
     ports:
-      # Exposed ports (bas, hvs-1 and -2 so far)
+      # Exposed all ports so only one instance can be launched unless commented out manually
+      # In order : bas, hvs-1 , -2, and -3
       - "8100:8100"
       - "8200:8200"
       - "8201:8201"
+      - "8202:8202"
     volumes:
       # Configurations for tellicast services
       - ./etc/cast-client_bas.ini:/etc/cast-client_bas.ini:ro
       - ./etc/cast-client_hvs-1.ini:/etc/cast-client_hvs-1.ini:ro
+      - ./etc/cast-client_hvs-2.ini:/etc/cast-client_hvs-2.ini:ro
+      - ./etc/cast-client_hvs-3.ini:/etc/cast-client_hvs-3.ini:ro
       - ./etc/cast-client-channels_bas.ini:/etc/cast-client-channels_bas.ini:ro
       - ./etc/cast-client-channels_hvs-1.ini:/etc/cast-client-channels_hvs-1.ini:ro
+      - ./etc/cast-client-channels_hvs-2.ini:/etc/cast-client-channels_hvs-2.ini:ro
+      - ./etc/cast-client-channels_hvs-3.ini:/etc/cast-client-channels_hvs-3.ini:ro
       - ./etc/tellicast-client.cfg:/etc/tellicast-client.cfg:ro
       # Where data will be stored
       - ${DATA_DIR}:/home/${USER_NAME}

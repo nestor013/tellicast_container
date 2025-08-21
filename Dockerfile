@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y pcscd libccid libgtk2.0-0 sudo
 
 # Copy and install tellicast and token software
 COPY pkgs/eumetsat/*.deb /tmp
-RUN apt-get install -y /tmp/tellicast-client-2.14.7-1_amd64.deb \
+RUN apt-get install -y /tmp/tellicast-client-*amd64.deb \
                        /tmp/SafenetAuthenticationClient-core-9.0.43-0_amd64.deb && \
     apt-get install -f && \
     rm /tmp/*.deb
